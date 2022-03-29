@@ -1,0 +1,86 @@
+server:
+  port: 15100
+  hostname: localhost
+  protocal: http
+
+eureka:
+  instance:
+    hostname: ${server.hostname}
+  client:
+    eureka-server-port: 15000
+    serviceUrl:
+      defaultZone: ${server.protocal}://${server.hostname}:${eureka.client.eureka-server-port}/eureka/
+    registerWithEureka: true
+    fetchRegistry: true
+
+zuul:
+  routes:
+    authentication-server:
+      path: /auth/**
+      strip-prefix: false
+    user-server:
+      path: /api/users/**
+      strip-prefix: false
+    policy-server:
+      path: /api/policies/**
+      strip-prefix: false
+    terms-server:
+      path: /api/terms/**
+      strip-prefix: false
+      service-id: api-policy-server
+    ethereum-server:
+      path: /api/ethereum/**
+      strip-prefix: false
+    klaytn-server:
+      path: /api/klaytn/**
+      strip-prefix: false
+  sensitive-headers: Cookie, Set-Cookie
+  add-proxy-headers: true
+  host:
+    connect-timeout-millis: 30000
+    socket-timeout-millis: 60000
+    time-to-live: -1
+  semaphore:
+    max-semaphores: 5000
+  ribbonIsolationStrategy: THREAD
+
+ribbon:
+  restclient:
+    enabled: true
+  eureka:
+    enabled: true
+  ConnectTimeout: 30000
+  ReadTimeout: 30000
+
+hystrix:
+  threadpool:
+    default:
+      coreSize: 100
+      maximumSize: 5000
+      allowMaximumSizeToDivergeFromCoreSize: true
+      maxQueueSize: -1
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+
+security:
+  oauth2:
+    client:
+      client-id: maxClientId
+      client-secret: maxSecret
+    resource:
+      prefer-token-info: true
+      jwt:
+        key-value: |
+          -----BEGIN PUBLIC KEY-----
+          MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApTXcVZitK9H93MCscJMD
+          DtqLfhv53NemsyYERRRrX1sMh5oyxbjZ5w2Eqm3hGEhiGbT5d3pxXjAfd1ZTpu18
+          eLyB1iIKQ7VQV0/0XxnH5i8BrV+Kj6k7ywgb/1PPlc3o6nAhSr6d71pM6+LRKlzd
+          N5Dy2NUlsRd9ds594lUjChT51Tlbbkb9XK6UEB94LK5hNB86GwPkg7ZEEGLd/Qd3
+          QZWvEYNsjd4CZM6W57wni+X6tkRnq7eA/atRGGfIKqwul/hkBdj6FhrBPZ/CUxjV
+          8jLldDw2rhTmLNGJ++xcKhKRb/I+VlZrlQ1Jp7vwPHs3XLEYpK3hEGSgGfc+w4e8
+          pQIDAQAB
+          -----END PUBLIC KEY-----

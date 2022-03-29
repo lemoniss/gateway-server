@@ -1,0 +1,9 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: gateway-server
+  main:
+    allow-bean-definition-overriding: true
+  http:
+    log-request-details: true
